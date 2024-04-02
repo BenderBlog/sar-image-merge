@@ -1,6 +1,6 @@
 % 生成模拟地形
 % 设定随机数
-rng(3000)
+rng(2500)
 
 % 生成模拟地形
 xLimits         = [900 1200]; % x-axis limits of terrain (m)
@@ -38,13 +38,13 @@ apertureLength = 6;                % Aperture length (m)
 sqa = 30;                           % Squint angle (deg)
 
 % Platform properties
-v = 50;                           % Speed of the platform (m/s)
-dur = 8;                           % Duration of flight (s)
+v = 100;                           % Speed of the platform (m/s)
+dur = 4;                           % Duration of flight (s)
 rdrhgt = 1000;                     % Height of platform (m)
 rdrpos1 = [0 -200 rdrhgt];            % Start position of the radar (m)
-rdrvel = [0 200 0];                  % Radar plaform velocity
+rdrvel = [0 v 0];                  % Radar plaform velocity
 rdrpos2 = rdrvel*dur + rdrpos1;    % End position of the radar (m)
-len = sarlen(v,dur)                % Synthetic aperture length (m)
+len = sarlen(100,1)                % Synthetic aperture length (m)
 
 % Configure the target platforms in x and y
 targetpos = [1000,len/2,0;1020,len/2,0;1040,len/2,0]; % Target positions (m)
@@ -154,18 +154,13 @@ raw = zeros(numel(minSample:truncRngSamp),numPulses); % IQ datacube
 % Collect IQ
 ii = 1;
 hRaw = helperPlotRawIQ(raw,minSample);
-simulateData = true; % Change to true to simulate IQ
-if simulateData
-    while advance(scene) %#ok<UNRCH>
-        tmp = receive(scene); % nsamp x 1
-        raw(:,ii) = tmp{1}(minSample:truncRngSamp);
-        if mod(ii,100) == 0 % Update plot after 100 pulses
-            helperUpdatePlotRawIQ(hRaw,raw);
-        end
-        ii = ii + 1;
+while advance(scene) %#ok<UNRCH>
+    tmp = receive(scene); % nsamp x 1
+    raw(:,ii) = tmp{1}(minSample:truncRngSamp);
+    if mod(ii,100) == 0 % Update plot after 100 pulses
+        helperUpdatePlotRawIQ(hRaw,raw);
     end
-else
-    load('rawSAR.mat');
+    ii = ii + 1;
 end
 helperUpdatePlotRawIQ(hRaw,raw);
 
