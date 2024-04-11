@@ -1,5 +1,5 @@
 function helperPlotSLC(slcimg,minSample,fs,v,prf,rdrpos1,targetpos, ...
-    xvec,yvec,A)
+    xvec,yvec,A,circleOfFourSize)
 % Plot magnitude of focused SAR image alongside reflectivity map
 
 % Cross-range y-vector (m)
@@ -38,7 +38,7 @@ ylabel('Cross-range (m)')
 title('Ground Truth')
 axis equal
 xlim([950 1100])
-ylim([0 100])
+ylim([-100 100])
 
 % SAR Image
 nexttile; 
@@ -52,28 +52,14 @@ xlabel('Slant Range (m)')
 ylabel('Cross-range (m)')
 title('SAR Image')
 axis equal
-xlim([1250 1420])
-ylim([0 100])
-
-drawnow
-pause(0.25)
+xlim([1200 1500])
+ylim([-100 100])
+if circleOfFourSize == 2
+    ylim([1000 1200])
+elseif circleOfFourSize == 4
+    ylim([-1000 -800])
 end
 
-function helperGetVisibilityStatus(tgtNum,occ)
-% Translate occlusion values to a visibility status
-
-visibility = {'not','partially','fully'};
-if all(occ)
-    idx = 1;
-elseif any(occ)
-    idx = 2;
-else
-    idx = 3;
-end
-visString = visibility{idx};
-pctCollect = sum(double(~occ))./numel(occ)*100;
-fprintf('Target %d is %s visible during the scenario (visible %.0f%% of the data collection).\n', ...
-    tgtNum,visString,pctCollect)
 drawnow
 pause(0.25)
 end

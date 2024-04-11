@@ -65,14 +65,16 @@ reflectivityLayers(:,:,2) = landreflectivity('WoodedHills', ...
 reflectivityType = ones(size(A)); 
 reflectivityType(A > 100) = 2; 
 
-% Plot custom reflectivity map
-helperPlotReflectivityMap(xvec,yvec,A,reflectivityType,rdrpos1,rdrpos2,targetpos)
+prompt = "Which direction per atanta direction? right 1 / down 2 / left 3 / up 4 \nOthers for all direction, very slow!(m2 mac use 20 min to simulate all!)\n";
+x = input(prompt);
+stop = x;
+if (x > 4 || x < 1)
+    x = 1;
+    stop = 4;
+end
 
-reflectivityMap = surfaceReflectivity('Custom','Frequency',freqTable, ...
-    'GrazingAngle',grazTable,'Reflectivity',reflectivityLayers, ...
-    'Speckle','Rayleigh')
-
-for circleOfFourSize = 4:4
+for circleOfFourSize = x:stop
+    tic
     disp("round " + circleOfFourSize)
     rdrpos1 = [0 -v rdrhgt];           % Start position of the radar (m)
     rdrvel = [0 v 0];                  % Radar plaform velocity
@@ -87,6 +89,13 @@ for circleOfFourSize = 4:4
         rdrvel = [-v 0 0];
     end
     rdrpos2 = rdrvel*dur + rdrpos1;    % End position of the radar (m)
+
+    % Plot custom reflectivity map
+    helperPlotReflectivityMap(xvec,yvec,A,reflectivityType,rdrpos1,rdrpos2,targetpos)
+
+    reflectivityMap = surfaceReflectivity('Custom','Frequency',freqTable, ...
+    'GrazingAngle',grazTable,'Reflectivity',reflectivityLayers, ...
+    'Speckle','Rayleigh')
     
     % Antenna orientation
     depang = depressionang(rdrhgt,rc,'Flat','TargetHeight',mean(tgthgts)); % Depression angle (deg)
@@ -187,7 +196,8 @@ for circleOfFourSize = 4:4
     % Generating Single Look Complex image using range migration algorithm
     slcimg = rangeMigrationLFM(raw,rdr.Waveform,freq,v,rc);
     helperPlotSLC(slcimg,minSample,fs,v,prf,rdrpos1,targetpos, ...
-        xvec,yvec,A)
+        xvec,yvec,A,circleOfFourSize)
+    toc
 end
 
 %%%
