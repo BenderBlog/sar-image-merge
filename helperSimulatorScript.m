@@ -1,12 +1,12 @@
 % Initialize random number generator
-rng(11111)
+rng(5260)
 
 % Create terrain
 xLimits         = [900 1600]; % x-axis limits of terrain (m)
-yLimits         = [-200 200]; % y-axis limits of terrain (m)
-roughnessFactor = 1.75;       % Roughness factor
+yLimits         = [-400 400]; % y-axis limits of terrain (m)
+roughnessFactor = 1.5;       % Roughness factor
 initialHgt      = 0;          % Initial height (m)
-initialPerturb  = 200;        % Overall height of map (m) 
+initialPerturb  = 100;        % Overall height of map (m) 
 numIter         = 8;          % Number of iterations
 [x,y,A] = helperRandomTerrainGenerator(roughnessFactor,initialHgt, ....
     initialPerturb,xLimits(1),xLimits(2), ...
@@ -40,13 +40,13 @@ rdrhgt = 1000;                     % Height of platform (m)
 len = sarlen(v,dur)                % Synthetic aperture length (m)
 
 % Configure the target platforms in x and y
-targetpos = [1000,len/2,0;1020,len/2,0;1040,len/2,0]; % Target positions (m)
-tgthgts = 110*ones(1,3); % Target height (m)
+targetpos = [1000,0,0;1020,0,0;1040,0,0]; % Target positions (m)
+tgthgts = 0*ones(1,3); % Target height (m)
 for it = 1:3 
     % Set target height relative to terrain
     [~,idxX] = min(abs(targetpos(it,1) - xvec)); 
     [~,idxY] = min(abs(targetpos(it,2) - yvec)); 
-    tgthgts(it) = tgthgts(it) + A(idxX,idxY); 
+    tgthgts(it) = A(idxX,idxY); 
     targetpos(it,3) = tgthgts(it); 
 end
 
@@ -63,32 +63,33 @@ reflectivityLayers(:,:,1) = landreflectivity('Woods', ...
 reflectivityLayers(:,:,2) = landreflectivity('WoodedHills', ...
     grazTable,freqTable);
 reflectivityType = ones(size(A)); 
-reflectivityType(A > 100) = 2; 
+reflectivityType(A > 100) = 2;
 
-prompt = "Which direction per atanta direction? right 1 / down 2 / left 3 / up 4 \nOthers for all direction, very slow!(m2 mac use 20 min to simulate all!)\n";
+angle = [
+    struct("Angle",-12, "Start",[42.62,-305.66,rdrhgt],"End",[1.05,-110.02,rdrhgt])
+    struct("Angle",-8,  "Start",[23.65,-238.21,rdrhgt],"End",[-4.18,-40.16,rdrhgt])
+    struct("Angle",-5,  "Start",[12.53,-186.81,rdrhgt],"End",[-4.91,12.43,rdrhgt])
+    struct("Angle",0,   "Start",[0,-100,rdrhgt],       "End",[0,100,rdrhgt])
+    struct("Angle",5,   "Start",[-4.91,-12.43,rdrhgt], "End",[12.53,186.81,rdrhgt])
+    struct("Angle",8,   "Start",[-4.18,40.16,rdrhgt],  "End",[23.65,238.21,rdrhgt])
+    struct("Angle",12,  "Start",[1.05,110.02,rdrhgt],  "End",[12.53,186.81,rdrhgt])
+];
+
+prompt = "Which direction per atanta direction? [1-7] -> [12,8,5,0,-5,-8,-12] \nOthers for all direction, very slow!(m2 mac use 20 min to simulate all!)\n";
 x = input(prompt);
 stop = x;
-if (x > 4 || x < 1)
+if (x > 7 || x < 1)
     x = 1;
-    stop = 4;
+    stop = 7;
 end
 
-for circleOfFourSize = x:stop
+for times = x:stop
     tic
-    disp("round " + circleOfFourSize)
-    rdrpos1 = [0 -v rdrhgt];           % Start position of the radar (m)
-    rdrvel = [0 v 0];                  % Radar plaform velocity
-    if circleOfFourSize == 2
-        rdrpos1 = [1000 1000 rdrhgt];
-        rdrvel = [v 0 0];
-    elseif circleOfFourSize == 3
-        rdrpos1 = [2200 v rdrhgt];
-        rdrvel = [0 -v 0];
-    elseif circleOfFourSize == 4
-        rdrpos1 = [1200 -1000 rdrhgt];
-        rdrvel = [-v 0 0];
-    end
-    rdrpos2 = rdrvel*dur + rdrpos1;    % End position of the radar (m)
+    disp("round " + times)
+    rdrpos1 = angle(times).Start;      % Start position of the radar (m)
+    rdrpos2 = angle(times).End;       % End position of the radar (m)
+    rdrvel = [v*sin((angle(times).Angle)) v*cos(angle(times).Angle) 0];                  
+                                       % Radar plaform velocity
 
     % Plot custom reflectivity map
     helperPlotReflectivityMap(xvec,yvec,A,reflectivityType,rdrpos1,rdrpos2,targetpos)
@@ -196,7 +197,7 @@ for circleOfFourSize = x:stop
     % Generating Single Look Complex image using range migration algorithm
     slcimg = rangeMigrationLFM(raw,rdr.Waveform,freq,v,rc);
     helperPlotSLC(slcimg,minSample,fs,v,prf,rdrpos1,targetpos, ...
-        xvec,yvec,A,circleOfFourSize)
+        xvec,yvec,A)
     toc
 end
 

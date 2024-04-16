@@ -1,5 +1,5 @@
 function helperPlotSLC(slcimg,minSample,fs,v,prf,rdrpos1,targetpos, ...
-    xvec,yvec,A,circleOfFourSize)
+    xvec,yvec,A)
 % Plot magnitude of focused SAR image alongside reflectivity map
 
 % Cross-range y-vector (m)
@@ -45,7 +45,7 @@ nexttile;
 slcimg = abs(slcimg).';
 hProc = pcolor(rngVec,y,slcimg);
 hProc.EdgeColor = 'none'; 
-colormap(hProc.Parent,parula)
+colormap(hProc.Parent,gray)
 hC = colorbar('southoutside');
 hC.Label.String = 'Magnitude';
 xlabel('Slant Range (m)')
@@ -54,11 +54,6 @@ title('SAR Image')
 axis equal
 xlim([1200 1500])
 ylim([-100 100])
-if circleOfFourSize == 2
-    ylim([1000 1200])
-elseif circleOfFourSize == 4
-    ylim([-1000 -800])
-end
 
 drawnow
 pause(0.25)
