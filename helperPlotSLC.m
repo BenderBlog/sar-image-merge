@@ -1,5 +1,4 @@
-function helperPlotSLC(slcimg,minSample,fs,v,prf,rdrpos1,targetpos, ...
-    xvec,yvec,A)
+function helperPlotSLC(slcimg,minSample,fs,v,prf,rdrpos1,min_y,max_y)
 % Plot magnitude of focused SAR image alongside reflectivity map
 
 % Cross-range y-vector (m)
@@ -21,27 +20,7 @@ f = figure('Position',[264 250 1411 535]);
 movegui(f,'center')
 tiledlayout(1,2,'TileSpacing','Compact');
 
-% Ground Truth
-nexttile;
-hS = surf(xvec,yvec,A);
-hS.EdgeColor = 'none';
-hold on;
-plot3(targetpos(:,1),targetpos(:,2),targetpos(:,3), ...
-    'o','MarkerFaceColor',[0.8500 0.3250 0.0980],'MarkerEdgeColor','k');
-landmap = landColormap(64);
-colormap(landmap); 
-hC = colorbar('southoutside');
-hC.Label.String = 'Elevation (m)';
-view([-1 75])
-xlabel('Range (m)')
-ylabel('Cross-range (m)')
-title('Ground Truth')
-axis equal
-xlim([950 1100])
-ylim([-100 100])
-
 % SAR Image
-nexttile; 
 slcimg = abs(slcimg).';
 hProc = pcolor(rngVec,y,slcimg);
 hProc.EdgeColor = 'none'; 
@@ -52,8 +31,8 @@ xlabel('Slant Range (m)')
 ylabel('Cross-range (m)')
 title('SAR Image')
 axis equal
-xlim([1200 1500])
-ylim([-100 100])
+xlim([1250 1500])
+ylim([min_y max_y])
 
 drawnow
 pause(0.25)

@@ -1,10 +1,11 @@
 % Initialize random number generator
-rng(5260)
+clear
+rng(5000)
 
 % Create terrain
 xLimits         = [900 1600]; % x-axis limits of terrain (m)
 yLimits         = [-400 400]; % y-axis limits of terrain (m)
-roughnessFactor = 1.5;       % Roughness factor
+roughnessFactor = 1.5;        % Roughness factor
 initialHgt      = 0;          % Initial height (m)
 initialPerturb  = 100;        % Overall height of map (m) 
 numIter         = 8;          % Number of iterations
@@ -72,7 +73,7 @@ angle = [
     struct("Angle",0,   "Start",[0,-100,rdrhgt],       "End",[0,100,rdrhgt])
     struct("Angle",5,   "Start",[-4.91,-12.43,rdrhgt], "End",[12.53,186.81,rdrhgt])
     struct("Angle",8,   "Start",[-4.18,40.16,rdrhgt],  "End",[23.65,238.21,rdrhgt])
-    struct("Angle",12,  "Start",[1.05,110.02,rdrhgt],  "End",[12.53,186.81,rdrhgt])
+    struct("Angle",12,  "Start",[1.05,110.02,rdrhgt],  "End",[42.62,305.66,rdrhgt])
 ];
 
 prompt = "Which direction per atanta direction? [1-7] -> [12,8,5,0,-5,-8,-12] \nOthers for all direction, very slow!(m2 mac use 20 min to simulate all!)\n";
@@ -92,7 +93,7 @@ for times = x:stop
                                        % Radar plaform velocity
 
     % Plot custom reflectivity map
-    helperPlotReflectivityMap(xvec,yvec,A,reflectivityType,rdrpos1,rdrpos2,targetpos)
+    %helperPlotReflectivityMap(xvec,yvec,A,reflectivityType,rdrpos1,rdrpos2,targetpos)
 
     reflectivityMap = surfaceReflectivity('Custom','Frequency',freqTable, ...
     'GrazingAngle',grazTable,'Reflectivity',reflectivityLayers, ...
@@ -134,14 +135,6 @@ for times = x:stop
     
     % Create a radar looking to the right / down / left / up
     mountAngles = [0 depang 0];
-    if circleOfFourSize == 2
-        mountAngles = [-90 depang 0];
-    elseif circleOfFourSize == 3
-        mountAngles = [0 180-depang 0];
-    elseif circleOfFourSize == 4
-        mountAngles = [90 depang 0];
-    end
-    
     rdr = radarTransceiver('MountingAngles',mountAngles,'NumRepetitions',1);
     
     % Set peak power
@@ -196,8 +189,9 @@ for times = x:stop
     
     % Generating Single Look Complex image using range migration algorithm
     slcimg = rangeMigrationLFM(raw,rdr.Waveform,freq,v,rc);
-    helperPlotSLC(slcimg,minSample,fs,v,prf,rdrpos1,targetpos, ...
-        xvec,yvec,A)
+    helperPlotSLC(slcimg,minSample,fs,v,prf,rdrpos1,...
+        angle(times).Start(2),angle(times).End(2))
+    save("pic" + angle(times).Angle + ".mat", "slcimg");
     toc
 end
 
