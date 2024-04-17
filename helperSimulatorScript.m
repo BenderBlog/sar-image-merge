@@ -70,13 +70,15 @@ angle = [
     struct("Angle",-12, "Start",[42.62,-305.66,rdrhgt],"End",[1.05,-110.02,rdrhgt])
     struct("Angle",-8,  "Start",[23.65,-238.21,rdrhgt],"End",[-4.18,-40.16,rdrhgt])
     struct("Angle",-5,  "Start",[12.53,-186.81,rdrhgt],"End",[-4.91,12.43,rdrhgt])
+    struct("Angle",-1.02,  "Start",[1.94,-117.76,rdrhgt],"End",[-1.62,82.21,rdrhgt])
     struct("Angle",0,   "Start",[0,-100,rdrhgt],       "End",[0,100,rdrhgt])
+    struct("Angle",1.02,  "Start",[-1.62,-82.21,rdrhgt],"End",[1.94,117.76,rdrhgt])
     struct("Angle",5,   "Start",[-4.91,-12.43,rdrhgt], "End",[12.53,186.81,rdrhgt])
     struct("Angle",8,   "Start",[-4.18,40.16,rdrhgt],  "End",[23.65,238.21,rdrhgt])
     struct("Angle",12,  "Start",[1.05,110.02,rdrhgt],  "End",[42.62,305.66,rdrhgt])
 ];
 
-prompt = "Which direction per atanta direction? [1-7] -> [12,8,5,0,-5,-8,-12] \nOthers for all direction, very slow!(m2 mac use 20 min to simulate all!)\n";
+prompt = "Which direction per atanta direction? [1-9] -> [-12,-8,-5,-1,0,1,5,8,12] \nOthers for all direction, very slow!(m2 mac use 20 min to simulate all!)\n";
 x = input(prompt);
 stop = x;
 if (x > 7 || x < 1)
