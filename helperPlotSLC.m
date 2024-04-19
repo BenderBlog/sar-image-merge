@@ -1,4 +1,4 @@
-function helperPlotSLC(slcimg,minSample,fs,v,prf,rdrpos1,min_y,max_y)
+function helperPlotSLC(slcimg,minSample,fs,v,prf,rdrpos1,min_y,max_y,angle_pic)
 % Plot magnitude of focused SAR image alongside reflectivity map
 
 % Cross-range y-vector (m)
@@ -29,7 +29,7 @@ hC = colorbar('southoutside');
 hC.Label.String = 'Magnitude';
 xlabel('Slant Range (m)')
 ylabel('Cross-range (m)')
-title('SAR Image')
+title(strcat('SAR Image with angle"',int2str(angle_pic),'"'))
 axis equal
 xlim([1250 1500])
 ylim([min_y max_y])
