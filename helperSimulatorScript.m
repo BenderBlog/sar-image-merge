@@ -67,40 +67,37 @@ reflectivityLayers(:,:,2) = landreflectivity('WoodedHills', ...
 reflectivityType = ones(size(A));
 reflectivityType(A > 100) = 2;
 
-angle = [
-    struct("Angle",-12, "Start",[42.62,-305.66,rdrhgt],"End",[1.05,-110.02,rdrhgt])
-    struct("Angle",-8,  "Start",[23.65,-238.21,rdrhgt],"End",[-4.18,-40.16,rdrhgt])
-    struct("Angle",-5,  "Start",[12.53,-186.81,rdrhgt],"End",[-4.91,12.43,rdrhgt])
-    struct("Angle",-1.02,  "Start",[1.94,-117.76,rdrhgt],"End",[-1.62,82.21,rdrhgt])
-    struct("Angle",0,   "Start",[0,-100,rdrhgt],       "End",[0,100,rdrhgt])
-    struct("Angle",1.02,  "Start",[-1.62,-82.21,rdrhgt],"End",[1.94,117.76,rdrhgt])
-    struct("Angle",5,   "Start",[-4.91,-12.43,rdrhgt], "End",[12.53,186.81,rdrhgt])
-    struct("Angle",8,   "Start",[-4.18,40.16,rdrhgt],  "End",[23.65,238.21,rdrhgt])
-    struct("Angle",12,  "Start",[1.05,110.02,rdrhgt],  "End",[42.62,305.66,rdrhgt])
-    struct("Angle",1,  "Start",[0,-100,rdrhgt],  "End",[3.49,99.97,rdrhgt])
-    struct("Angle",-1,  "Start",[-3.49,-99.97,rdrhgt],  "End",[0,100,rdrhgt])
-    struct("Angle",6.02,  "Start",[0,-100,rdrhgt],  "End",[20.96,98.90,rdrhgt])
-    struct("Angle",-6.02,  "Start",[20.96,-98.90,rdrhgt],  "End",[0,100,rdrhgt])
-    ];
 
-prompt = "Which direction per atanta direction? [1-9] -> [-12,-8,-5,-1,0,1,5,8,12] \n 0 stands for all path\nOthers for all direction, very slow!(m2 mac use 20 min to simulate all!)\n";
-x = input(prompt)
-stop = x;
-if (x > 9 || x < 1)
-    x = 1;
-    stop = 9;
-end
+angles = -24:2:24;
+% (x0,y0) refrence dot, middle of the route
+% (x,y) center of the target
+x0 = 0; y0 = 0; x = 1000; y = 0;
+routeLength = v * dur;
 
-for times = x:stop
+for angle = angles
     tic
-    disp("round " + times)
-    rdrpos1 = angle(times).Start;      % Start position of the radar (m)
-    rdrpos2 = angle(times).End;       % End position of the radar (m)
-    rdrvel = [v*sin((angle(times).Angle)) v*cos(angle(times).Angle) 0];
+    disp("angle " + angle)
+    
+    [xMidPoint,yMidPoint] = helperDotTurn(angle, x, y, x0, y0);
+    [xStart,yStart] = helperDotTurn(angle, xMidPoint,yMidPoint, xMidPoint,yMidPoint - routeLength / 2);
+    rdrvel = [v*sin(-angle*pi/180) v*cos(-angle*pi/180) 0];
+
+    xStop = xStart + rdrvel(1) * dur;
+    yStop = yStart + rdrvel(2) * dur;
+
+    rdrpos1 = [xStart,yStart,rdrhgt];      % Start position of the radar (m)
+    rdrpos2 = [xStop,yStop,rdrhgt];      % End position of the radar (m)
+
+    disp(xMidPoint)
+    disp(yMidPoint)
+    disp(rdrpos1)
+    disp(rdrpos2)
+    disp(rdrvel)
+    %
     % Radar plaform velocity
     
     % Plot custom reflectivity map
-    %helperPlotReflectivityMap(xvec,yvec,A,reflectivityType,rdrpos1,rdrpos2,targetpos)
+    helperPlotReflectivityMap(xvec,yvec,A,reflectivityType,rdrpos1,rdrpos2,targetpos)
     
     reflectivityMap = surfaceReflectivity('Custom','Frequency',freqTable, ...
         'GrazingAngle',grazTable,'Reflectivity',reflectivityLayers, ...
@@ -124,7 +121,7 @@ for times = x:stop
     scene = radarScenario('UpdateRate',prf,'IsEarthCentered',false,'StopTime',dur);
     
     % Add platforms to the scene using the configurations previously defined
-    rdrplat = platform(scene,'Trajectory',kinematicTrajectory('Position',rdrpos1,'Velocity',[0 v 0]));
+    rdrplat = platform(scene,'Trajectory',kinematicTrajectory('Position',rdrpos1,'Velocity',rdrvel));
     
     % Add target platforms
     rcs = rcsSignature('Pattern',5);
@@ -133,7 +130,7 @@ for times = x:stop
     end
     
     % Plot ground truth
-    helperPlotGroundTruth(xvec,yvec,A,rdrpos1,rdrpos2,targetpos)
+    %helperPlotGroundTruth(xvec,yvec,A,rdrpos1,rdrpos2,targetpos)
     
     % Add land surface to scene
     s = landSurface(scene,'Terrain',A,'Boundary',[xLimits;yLimits], ...
@@ -141,7 +138,7 @@ for times = x:stop
         'ReflectivityMap',reflectivityType);
     
     % Create a radar looking to the right / down / left / up
-    mountAngles = [-angle(times).Angle depang 0]
+    mountAngles = [angle depang 0]
     rdr = radarTransceiver('MountingAngles',mountAngles,'NumRepetitions',1);
     
     % Set peak power
@@ -180,27 +177,6 @@ for times = x:stop
     numPulses = dur/T + 1; % Number of pulses
     raw = zeros(numel(minSample:truncRngSamp),numPulses); % IQ datacube
     
-    if x == 0
-        % Collect IQ
-        ii = 1;
-        hRaw = helperPlotRawIQ(raw,minSample);
-        % Simulate IQ
-        while advance(scene) %#ok<UNRCH>
-            tmp = receive(scene); % nsamp x 1
-            raw(:,ii) = tmp{1}(minSample:truncRngSamp);
-            if mod(ii,100) == 0 % Update plot after 100 pulses
-                helperUpdatePlotRawIQ(hRaw,raw);
-            end
-            ii = ii + 1;
-        end
-        helperUpdatePlotRawIQ(hRaw,raw);
-        
-        % Generating Single Look Complex image using range migration algorithm
-        slcimg = rangeMigrationLFM(raw,rdr.Waveform,freq,v,rc);
-        helperPlotSLC(slcimg,minSample,fs,v,prf,rdrpos1,...
-            angle(times).Start(2),angle(times).End(2),angle(times).Angle)
-        save("pic" + angle(times).Angle + "-" + seed + ".mat", "slcimg");
-    end
     toc
 end
 
