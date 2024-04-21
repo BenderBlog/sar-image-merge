@@ -19,7 +19,7 @@ yvec = y(:,1);
 resMapX = mean(diff(xvec));
 resMapY = mean(diff(yvec));
 % Plot simulated terrain
-helperPlotSimulatedTerrain(xvec,yvec,A)
+%helperPlotSimulatedTerrain(xvec,yvec,A)
 
 % Define key radar parameters
 freq = 1e9;                        % Carrier frequency (Hz)
@@ -97,7 +97,7 @@ for angle = angles
     % Radar plaform velocity
     
     % Plot custom reflectivity map
-    helperPlotReflectivityMap(xvec,yvec,A,reflectivityType,rdrpos1,rdrpos2,targetpos)
+    %helperPlotReflectivityMap(xvec,yvec,A,reflectivityType,rdrpos1,rdrpos2,targetpos)
     
     reflectivityMap = surfaceReflectivity('Custom','Frequency',freqTable, ...
         'GrazingAngle',grazTable,'Reflectivity',reflectivityLayers, ...
@@ -177,6 +177,27 @@ for angle = angles
     numPulses = dur/T + 1; % Number of pulses
     raw = zeros(numel(minSample:truncRngSamp),numPulses); % IQ datacube
     
+    
+    % Collect IQ
+    ii = 1;
+    hRaw = helperPlotRawIQ(raw,minSample);
+    % Simulate IQ
+    while advance(scene) %#ok<UNRCH>
+        tmp = receive(scene); % nsamp x 1
+        raw(:,ii) = tmp{1}(minSample:truncRngSamp);
+        if mod(ii,100) == 0 % Update plot after 100 pulses
+            helperUpdatePlotRawIQ(hRaw,raw);
+        end
+        ii = ii + 1;
+    end
+    helperUpdatePlotRawIQ(hRaw,raw);
+        
+    % Generating Single Look Complex image using range migration algorithm
+    slcimg = rangeMigrationLFM(raw,rdr.Waveform,freq,v,rc);
+    %helperPlotSLC(slcimg,minSample,fs,v,prf,rdrpos1,...
+    %    rdrpos1(2),rdrpos2(2),angle);
+    save("pic" + angle + "-" + seed + ".mat", "slcimg");
+
     toc
 end
 

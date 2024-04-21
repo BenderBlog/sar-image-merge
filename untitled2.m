@@ -1,4 +1,4 @@
-for angle = -12
+for angle = -24:2:24
     [xMidPoint,yMidPoint] = helperDotTurn(angle, x, y, x0, y0);
     [xStart,yStart] = helperDotTurn(angle, xMidPoint,yMidPoint, xMidPoint,yMidPoint - routeLength / 2);
     [xStop,yStop] = helperDotTurn(angle, xMidPoint,yMidPoint, xMidPoint,yMidPoint + routeLength / 2);
