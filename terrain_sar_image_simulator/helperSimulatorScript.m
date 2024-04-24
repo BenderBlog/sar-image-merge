@@ -39,10 +39,10 @@ sqa = 0;                           % Squint angle (deg)
 v = 100;                           % Speed of the platform (m/s)
 dur = 2;                           % Duration of flight (s)
 rdrhgt = 1000;                     % Height of platform (m)
-len = sarlen(v,dur)                % Synthetic aperture length (m)
+len = sarlen(v,dur);               % Synthetic aperture length (m)
 
 % Configure the target platforms in x and y
-targetpos = [1000,0,0;1020,0,0;1040,0,0]; % Target positions (m)
+targetpos = [1000,0,0;1020,0,0;980,0,0]; % Target positions (m)
 tgthgts = 0*ones(1,3); % Target height (m)
 for it = 1:3
     % Set target height relative to terrain
@@ -68,7 +68,7 @@ reflectivityType = ones(size(A));
 reflectivityType(A > 100) = 2;
 
 
-angles = -24:2:24;
+angles = -25:25;
 % (x0,y0) refrence dot, middle of the route
 % (x,y) center of the target
 x0 = 0; y0 = 0; x = 1000; y = 0;
@@ -176,13 +176,13 @@ for angle = angles
     T = 1/prf; % Pulse repetition interval (sec)
     numPulses = dur/T + 1; % Number of pulses
     raw = zeros(numel(minSample:truncRngSamp),numPulses); % IQ datacube
-    
-    
+
     % Collect IQ
     ii = 1;
-    hRaw = helperPlotRawIQ(raw,minSample);
+    %hRaw = helperPlotRawIQ(raw,minSample);
     % Simulate IQ
     while advance(scene) %#ok<UNRCH>
+        disp("current situation: " + ii);
         tmp = receive(scene); % nsamp x 1
         raw(:,ii) = tmp{1}(minSample:truncRngSamp);
         if mod(ii,100) == 0 % Update plot after 100 pulses
@@ -190,14 +190,11 @@ for angle = angles
         end
         ii = ii + 1;
     end
-    helperUpdatePlotRawIQ(hRaw,raw);
+    %helperUpdatePlotRawIQ(hRaw,raw);
         
     % Generating Single Look Complex image using range migration algorithm
     slcimg = rangeMigrationLFM(raw,rdr.Waveform,freq,v,rc);
-    %helperPlotSLC(slcimg,minSample,fs,v,prf,rdrpos1,...
-    %    rdrpos1(2),rdrpos2(2),angle);
-    save("pic" + angle + "-" + seed + ".mat", "slcimg");
-
+    imwrite(helperSaveSLC(slcimg,minSample,fs,v,prf),"pic" + angle + "-" + seed + ".jpg");
     toc
 end
 

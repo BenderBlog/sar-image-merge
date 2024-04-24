@@ -1,4 +1,4 @@
-for angle = -24:2:24
+for angle = -90
     [xMidPoint,yMidPoint] = helperDotTurn(angle, x, y, x0, y0);
     [xStart,yStart] = helperDotTurn(angle, xMidPoint,yMidPoint, xMidPoint,yMidPoint - routeLength / 2);
     [xStop,yStop] = helperDotTurn(angle, xMidPoint,yMidPoint, xMidPoint,yMidPoint + routeLength / 2);
@@ -9,6 +9,5 @@ for angle = -24:2:24
     disp(rdrpos2)
 
     slcimg = load("pic"+angle+"-5000.mat").slcimg;
-    helperPlotSLC(slcimg,minSample,fs,v,prf,rdrpos1,...
-        rdrpos1(2),rdrpos2(2),angle);
+    helperPlotSLC(slcimg,minSample,fs,v,prf,rdrpos1,rdrpos2);
 end
