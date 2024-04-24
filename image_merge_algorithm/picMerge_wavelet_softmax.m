@@ -82,12 +82,12 @@ for level = clevels:-1:1
             result{level,4}, ...
             wave);
     end
-    if level == 1
-        imwrite(uint8(result_append{before}),"wavelet-a.jpg");
-        imwrite(result{level,2},"wavelet-v.jpg");
-        imwrite(result{level,3},"wavelet-h.jpg");
-        imwrite(result{level,3},"wavelet-d.jpg");
-    end
+    %if level == 1
+    %    imwrite(uint8(result_append{before}),"wavelet-a.jpg");
+    %    imwrite(result{level,2},"wavelet-v.jpg");
+    %    imwrite(result{level,3},"wavelet-h.jpg");
+    %    imwrite(result{level,3},"wavelet-d.jpg");
+    %end
 end
 
 % 融合回去
