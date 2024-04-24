@@ -88,11 +88,11 @@ for angle = angles
     rdrpos1 = [xStart,yStart,rdrhgt];      % Start position of the radar (m)
     rdrpos2 = [xStop,yStop,rdrhgt];      % End position of the radar (m)
 
-    disp(xMidPoint)
-    disp(yMidPoint)
-    disp(rdrpos1)
-    disp(rdrpos2)
-    disp(rdrvel)
+    %disp(xMidPoint)
+    %disp(yMidPoint)
+    %disp(rdrpos1)
+    %disp(rdrpos2)
+    %disp(rdrvel)
     %
     % Radar plaform velocity
     
@@ -138,7 +138,7 @@ for angle = angles
         'ReflectivityMap',reflectivityType);
     
     % Create a radar looking to the right / down / left / up
-    mountAngles = [angle depang 0]
+    mountAngles = [angle depang 0];
     rdr = radarTransceiver('MountingAngles',mountAngles,'NumRepetitions',1);
     
     % Set peak power
@@ -179,18 +179,13 @@ for angle = angles
 
     % Collect IQ
     ii = 1;
-    %hRaw = helperPlotRawIQ(raw,minSample);
     % Simulate IQ
-    while advance(scene) %#ok<UNRCH>
-        disp("current situation: " + ii);
+    while advance(scene) 
         tmp = receive(scene); % nsamp x 1
         raw(:,ii) = tmp{1}(minSample:truncRngSamp);
-        if mod(ii,100) == 0 % Update plot after 100 pulses
-            helperUpdatePlotRawIQ(hRaw,raw);
-        end
+        disp("current progress: " + ii/numPulses + "%");
         ii = ii + 1;
     end
-    %helperUpdatePlotRawIQ(hRaw,raw);
         
     % Generating Single Look Complex image using range migration algorithm
     slcimg = rangeMigrationLFM(raw,rdr.Waveform,freq,v,rc);
