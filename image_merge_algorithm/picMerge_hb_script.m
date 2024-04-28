@@ -60,4 +60,17 @@ imwrite(result, "pic_hb/result_nsct_softmax.jpg");
 evaluate(result);
 mutual_information(result,pictures);
 
+
+disp("一次小波分解，pca method")
+result = picMerge_wavelet_pca(pictures);
+imwrite(result, "pic_hb/result_wavelet_pca.jpg");
+evaluate(result);
+mutual_information(result,pictures);
+
+disp("三次 NSCT 分解，pca method")
+result = picMerge_nsct_pca(pictures);
+imwrite(result, "pic_hb/result_nsct_pca.jpg");
+evaluate(result);
+mutual_information(result,pictures);
+
 %size(evaluate(result))

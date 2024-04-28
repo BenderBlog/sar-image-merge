@@ -42,9 +42,9 @@ rdrhgt = 1000;                     % Height of platform (m)
 len = sarlen(v,dur);               % Synthetic aperture length (m)
 
 % Configure the target platforms in x and y
-targetpos = [1000,0,0;1020,0,0;980,0,0]; % Target positions (m)
-tgthgts = 0*ones(1,3); % Target height (m)
-for it = 1:3
+targetpos = [1000,0,0;1020,0,0;980,0,0;1000,50,0;1000,25,0;1000,-25,0;1000,-50,0]; % Target positions (m)
+tgthgts = 0*ones(1,size(targetpos,1)); % Target height (m)
+for it = 1:size(targetpos,1)
     % Set target height relative to terrain
     [~,idxX] = min(abs(targetpos(it,1) - xvec));
     [~,idxY] = min(abs(targetpos(it,2) - yvec));
@@ -67,6 +67,10 @@ reflectivityLayers(:,:,2) = landreflectivity('WoodedHills', ...
 reflectivityType = ones(size(A));
 reflectivityType(A > 100) = 2;
 
+% Multi wait bar
+multiWaitbar( 'CloseAll' );
+multiWaitbar( 'Angle process', 0 );
+multiWaitbar( 'Generate process', 0);
 
 angles = -25:25;
 % (x0,y0) refrence dot, middle of the route
@@ -74,20 +78,21 @@ angles = -25:25;
 x0 = 0; y0 = 0; x = 1000; y = 0;
 routeLength = v * dur;
 
-for angle = angles
+for i = 1:length(angles)
     tic
-    disp("angle " + angle)
+    angle = angles(i);
+    multiWaitbar( 'Angle process', i/length(angles) );
     
     [xMidPoint,yMidPoint] = helperDotTurn(angle, x, y, x0, y0);
     [xStart,yStart] = helperDotTurn(angle, xMidPoint,yMidPoint, xMidPoint,yMidPoint - routeLength / 2);
     rdrvel = [v*sin(-angle*pi/180) v*cos(-angle*pi/180) 0];
-
+    
     xStop = xStart + rdrvel(1) * dur;
     yStop = yStart + rdrvel(2) * dur;
-
+    
     rdrpos1 = [xStart,yStart,rdrhgt];      % Start position of the radar (m)
     rdrpos2 = [xStop,yStop,rdrhgt];      % End position of the radar (m)
-
+    
     %disp(xMidPoint)
     %disp(yMidPoint)
     %disp(rdrpos1)
@@ -125,7 +130,7 @@ for angle = angles
     
     % Add target platforms
     rcs = rcsSignature('Pattern',5);
-    for it = 1:3
+    for it = 1:size(targetpos,1)
         platform(scene,'Position',targetpos(it,:),'Signatures',{rcs});
     end
     
@@ -176,17 +181,18 @@ for angle = angles
     T = 1/prf; % Pulse repetition interval (sec)
     numPulses = dur/T + 1; % Number of pulses
     raw = zeros(numel(minSample:truncRngSamp),numPulses); % IQ datacube
-
+    
     % Collect IQ
     ii = 1;
     % Simulate IQ
-    while advance(scene) 
+    while advance(scene)
         tmp = receive(scene); % nsamp x 1
         raw(:,ii) = tmp{1}(minSample:truncRngSamp);
-        disp("current progress: " + ii/numPulses + "%");
+        %disp("current progress: " + ii/numPulses + "%");
+        multiWaitbar( 'Generate process', ii/numPulses);
         ii = ii + 1;
     end
-        
+    
     % Generating Single Look Complex image using range migration algorithm
     slcimg = rangeMigrationLFM(raw,rdr.Waveform,freq,v,rc);
     imwrite(helperSaveSLC(slcimg,minSample,fs,v,prf),"pic" + angle + "-" + seed + ".jpg");

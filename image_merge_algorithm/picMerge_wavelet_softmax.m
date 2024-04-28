@@ -33,7 +33,8 @@ result = cell(size(dealt{1}));
 for level = 1:clevels
     for type = 1:4
         to_append = zeros(size(dealt{1}{level,type}));
-        if type == 1 && level == clevels
+        if (type == 1 && level == clevels) == false
+            % 低频使用修改的 softmax 函数
             % 对于低频，绝对值较大方式。
             % 实际上只针对最底层的有效，因为小波分解都是依靠上一层的低频来的信息
             size_array = size(dealt{1}{level,type});

@@ -1,4 +1,7 @@
-function [resultPic] = picMerge_nsct_softmax(pictures)
+function [resultPic] = picMerge_nsct_pca(pictures)
+% 本代码参考
+% 名称：Pixel level fusion for multiple SAR images using PCA and wavelet transform
+% IEEE 链接：https://ieeexplore.ieee.org/document/4148315
 
 pictures_count = size(pictures,1);
 dealt = cell(size(pictures));
@@ -31,30 +34,27 @@ for i = 1:clevels
 end
 
 % 按照分解层次来融合
+% PCA 加权法
+value_array = zeros(1,pictures_count);
 for i = 1:clevels
     if i == 1
-        % 对于低频，softmax 方法
-        newclear_norm_array = zeros(pictures_count,1);
-        for k = 1:pictures_count
-             newclear_norm_array(k) = newclear_norm(dealt{k}{i});
-        end
-        sumup = sum(newclear_norm_array);
-        target_data = zeros(size(dealt{k}{i}));
-        for k = 1:pictures_count
-            target_data = target_data + dealt{k}{i} * newclear_norm_array(k);
-        end
-        result{i} = target_data / sumup;
-    % 用于高频，使用绝对值最大   
-    elseif i == 2
         size_array = size(result{i});
+        % 对低频进行 PCA 变换
+        for pic = 1:pictures_count
+            pca_level = min(size_array) * 0.75;
+            dealt{pic}{i} = pca_deal(dealt{pic}{i},uint32(pca_level)); 
+            value_array(pic) = mean(dealt{pic}{i}(:));
+        end
+        value_array = value_array / sum(value_array);
+    end
+    if i == 1 || i == 2
+        size_array = size(result{i});
+        % 进行均值权重融合
         for j = 1:size_array(1)
             for k = 1:size_array(2)
-                value_array = zeros(1,5);
                 for pic = 1:pictures_count
-                    value_array(pic) = abs(dealt{pic}{i}(j,k));
+                     result{i}(j,k) = result{i}(j,k) + dealt{pic}{i}(j,k) * value_array(pic);
                 end
-                [~,index] = max(value_array);
-                result{i}(j,k) = dealt{index}{i}(j,k);
             end
         end
     else
@@ -64,12 +64,9 @@ for i = 1:clevels
             size_array = size(result{i}{j});
             for k = 1:size_array(1)
                 for l = 1:size_array(2)
-                    value_array = zeros(1,5);
                     for pic = 1:pictures_count
-                        value_array(pic) = abs(dealt{pic}{i}{j}(k,l));
+                         result{i}{j}(k,l) = result{i}{j}(k,l) + dealt{pic}{i}{j}(k,l) * value_array(pic);
                     end
-                    [~,index] = max(value_array);
-                    result{i}{j}(k,l) = dealt{index}{i}{j}(k,l);
                 end
             end
         end
