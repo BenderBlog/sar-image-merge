@@ -33,10 +33,8 @@ result = cell(size(dealt{1}));
 for level = 1:clevels
     for type = 1:4
         to_append = zeros(size(dealt{1}{level,type}));
+        % 如果不是低频，使用最大绝对值，因为数据量较少
         if (type == 1 && level == clevels) == false
-            % 低频使用修改的 softmax 函数
-            % 对于低频，绝对值较大方式。
-            % 实际上只针对最底层的有效，因为小波分解都是依靠上一层的低频来的信息
             size_array = size(dealt{1}{level,type});
             for j = 1:size_array(1)
                 for k = 1:size_array(2)
@@ -49,7 +47,7 @@ for level = 1:clevels
                 end
             end
         else
-            % 用于高频，仍使用修改的 softmax 函数，使用核范式
+            % 否则使用核范式
             newclear_norm_array = zeros(pictures_count,1);
             for pics = 1:pictures_count
                 newclear_norm_array(pics) = newclear_norm(dealt{pics}{level,type});

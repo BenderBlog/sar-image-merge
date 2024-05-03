@@ -36,6 +36,12 @@ imwrite(result, "pic_hb/result_straight.jpg");
 evaluate(result);
 mutual_information(result,pictures);
 
+disp("一次小波分解，pca method")
+result = picMerge_wavelet_pca(pictures);
+imwrite(result, "pic_hb/result_wavelet_pca.jpg");
+evaluate(result);
+mutual_information(result,pictures);
+
 disp("三次小波分解，使用绝对值法")
 result = picMerge_wavelet(pictures);
 imwrite(result, "pic_hb/result_wavelet.jpg");
@@ -57,13 +63,6 @@ mutual_information(result,pictures);
 disp("三次nsct分解，高频使用修改 softmax 方法，低频使用绝对值法")
 result = picMerge_nsct_softmax(pictures);
 imwrite(result, "pic_hb/result_nsct_softmax.jpg");
-evaluate(result);
-mutual_information(result,pictures);
-
-
-disp("一次小波分解，pca method")
-result = picMerge_wavelet_pca(pictures);
-imwrite(result, "pic_hb/result_wavelet_pca.jpg");
 evaluate(result);
 mutual_information(result,pictures);
 

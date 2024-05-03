@@ -37,12 +37,12 @@ for type = 1:4
     % 所以，只能按照黑白图片所拥有主成分的一半来了
     % 同时，我们需要通过近似图像的比例值来计算融合比例参数
     if type == 1
-       for pic = 1:pictures_count
-           pca_level = min(size_array) * 0.75;
-           dealt{pic,type} = pca_deal(dealt{pic,type},uint32(pca_level)); 
-           value_array(pic) = mean(dealt{pic,type}(:));
-       end
-       value_array = value_array / sum(value_array);
+        for pic = 1:pictures_count
+            pca_level = min(size_array) * 0.75;
+            dealt{pic,type} = pca_deal(dealt{pic,type},uint32(pca_level));
+            value_array(pic) = mean(dealt{pic,type}(:));
+        end
+        value_array = value_array / sum(value_array);
     end
     % 进行均值权重融合
     for j = 1:size_array(1)
