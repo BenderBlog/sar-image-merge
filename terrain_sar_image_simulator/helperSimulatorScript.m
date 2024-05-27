@@ -1,6 +1,12 @@
+function [pictures] = helperSimulatorScript(seed, angles)
+% A SAR image generator based on simulated terrain
+% Parameter:
+%   seed: random number generator seed
+%   angles: the angles image will shown
+
+pictures = cell(length(angles),1);
+
 % Initialize random number generator
-clear
-seed=5000;
 rng(seed)
 
 % Create terrain
@@ -16,14 +22,12 @@ numIter         = 8;          % Number of iterations
 A(A < 0) = 0; % Fill-in areas below 0
 xvec = x(1,:);
 yvec = y(:,1);
-resMapX = mean(diff(xvec));
-resMapY = mean(diff(yvec));
 % Plot simulated terrain
 %helperPlotSimulatedTerrain(xvec,yvec,A)
 
 % Define key radar parameters
 freq = 1e9;                        % Carrier frequency (Hz)
-[lambda,c] = freq2wavelen(freq);   % Wavelength (m)
+[lambda,~] = freq2wavelen(freq);   % Wavelength (m)
 bw = 30e6;                         % Signal bandwidth (Hz)
 fs = 60e6;                         % Sampling frequency (Hz)
 tpd = 3e-6;                        % Pulse width (sec)
@@ -32,17 +36,17 @@ tpd = 3e-6;                        % Pulse width (sec)
 bw2rangeres(bw)
 
 % Antenna properties
-apertureLength = 6;                % Aperture length (m)
-sqa = 0;                           % Squint angle (deg)
+apertureLength = 6;               % Aperture length (m)
+%sqa = 0;                          % Squint angle (deg)
 
 % Platform properties
 v = 100;                           % Speed of the platform (m/s)
 dur = 2;                           % Duration of flight (s)
 rdrhgt = 1000;                     % Height of platform (m)
-len = sarlen(v,dur);               % Synthetic aperture length (m)
+%len = sarlen(v,dur);               % Synthetic aperture length (m)
 
 % Configure the target platforms in x and y
-targetpos = [1000,0,0;1020,0,0;980,0,0;1000,50,0;1000,25,0;1000,-25,0;1000,-50,0]; % Target positions (m)
+targetpos = [1000,0,0;1020,0,0;980,0,0;]; % Target positions (m)
 tgthgts = 0*ones(1,size(targetpos,1)); % Target height (m)
 for it = 1:size(targetpos,1)
     % Set target height relative to terrain
@@ -72,26 +76,27 @@ multiWaitbar( 'CloseAll' );
 multiWaitbar( 'Angle process', 0 );
 multiWaitbar( 'Generate process', 0);
 
-angles = -25:25;
 % (x0,y0) refrence dot, middle of the route
 % (x,y) center of the target
 x0 = 0; y0 = 0; x = 1000; y = 0;
 routeLength = v * dur;
 
+% Plot ground truth on first
+helperPlotGroundTruth(xvec,yvec,A,targetpos)
+
 for i = 1:length(angles)
     tic
     angle = angles(i);
-    multiWaitbar( 'Angle process', i/length(angles) );
     
     [xMidPoint,yMidPoint] = helperDotTurn(angle, x, y, x0, y0);
     [xStart,yStart] = helperDotTurn(angle, xMidPoint,yMidPoint, xMidPoint,yMidPoint - routeLength / 2);
     rdrvel = [v*sin(-angle*pi/180) v*cos(-angle*pi/180) 0];
     
-    xStop = xStart + rdrvel(1) * dur;
-    yStop = yStart + rdrvel(2) * dur;
+    %xStop = xStart + rdrvel(1) * dur;
+    %yStop = yStart + rdrvel(2) * dur;
     
     rdrpos1 = [xStart,yStart,rdrhgt];      % Start position of the radar (m)
-    rdrpos2 = [xStop,yStop,rdrhgt];      % End position of the radar (m)
+    %rdrpos2 = [xStop,yStop,rdrhgt];        % End position of the radar (m)
     
     %disp(xMidPoint)
     %disp(yMidPoint)
@@ -110,16 +115,17 @@ for i = 1:length(angles)
     
     % Antenna orientation
     depang = depressionang(rdrhgt,rc,'Flat','TargetHeight',mean(tgthgts)); % Depression angle (deg)
-    grazang = depang; % Grazing angle (deg)
+    %grazang = depang % Grazing angle (deg)
     
     % Azimuth resolution
-    azResolution = sarazres(rc,lambda,len);  % Cross-range resolution (m)
+    %azResolution = sarazres(rc,lambda,len)  % Cross-range resolution (m)
     
     % Determine PRF bounds
-    [swlen,swwidth] = aperture2swath(rc,lambda,apertureLength,grazang);
-    [prfmin,prfmax] = sarprfbounds(v,azResolution,swlen,grazang);
+    %[swlen,swwidth] = aperture2swath(rc,lambda,apertureLength,grazang)
+    %[prfmin,prfmax] = sarprfbounds(v,azResolution,swlen,grazang);
     
     % Select a PRF within the PRF bounds
+    % Not too much, or simulation will be too slow to complete.
     prf = 500; % Pulse repetition frequency (Hz)
     
     % Create a radar scenario
@@ -133,10 +139,7 @@ for i = 1:length(angles)
     for it = 1:size(targetpos,1)
         platform(scene,'Position',targetpos(it,:),'Signatures',{rcs});
     end
-    
-    % Plot ground truth
-    %helperPlotGroundTruth(xvec,yvec,A,rdrpos1,rdrpos2,targetpos)
-    
+
     % Add land surface to scene
     s = landSurface(scene,'Terrain',A,'Boundary',[xLimits;yLimits], ...
         'RadarReflectivity',reflectivityMap, ...
@@ -189,26 +192,18 @@ for i = 1:length(angles)
         tmp = receive(scene); % nsamp x 1
         raw(:,ii) = tmp{1}(minSample:truncRngSamp);
         %disp("current progress: " + ii/numPulses + "%");
-        multiWaitbar( 'Generate process', ii/numPulses);
+        multiWaitbar( 'Generate process', (ii-1)/numPulses);
         ii = ii + 1;
     end
+    multiWaitbar( 'Generate process', (ii-1)/numPulses);
     
     % Generating Single Look Complex image using range migration algorithm
     slcimg = rangeMigrationLFM(raw,rdr.Waveform,freq,v,rc);
-    imwrite(helperSaveSLC(slcimg,minSample,fs,v,prf),"pic" + angle + "-" + seed + ".jpg");
-    toc
+    image_name = "pic" + angle + "-" + seed + ".jpg";
+    imwrite(helperSaveSLC(slcimg,minSample,fs,v,prf),image_name);
+    toc;
+    waitfor(helperRotateImage(imread(image_name),image_name));
+    pictures{i} = imread(strcat(image_name, "_dealt.jpg"));
+    multiWaitbar( 'Angle process', (i)/length(angles) );
 end
-
-%%%
-%%%for it = 1:3
-%%%    % Determine whether the target was occluded
-%%%    occ = false(1,numPulses);
-%%%    for ip = 1:numPulses
-%%%        rdrpos = rdrpos1 + rdrvel.*1/prf*(ip - 1);
-%%%        occ(ip) = s.occlusion(rdrpos,targetpos(it,:));
-%%%    end
-%%%
-%%%    % Translate occlusion values to a visibility status
-%%%    helperGetVisibilityStatus(it,occ)
-%%%end
-%%%
+end

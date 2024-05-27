@@ -19,7 +19,7 @@ x = max(rngVec) - min(rngVec)
 % SAR Image
 img = abs(slcimg).';
 img = imresize(img,[y,x]);
-%img = imcrop(img,[0,0,250,size(slcimg,2)]);
-%img = img / max(max(img));
+img = imcrop(img,[0,0,250,size(slcimg,2)]);
+img = img / max(max(img));
 
 end

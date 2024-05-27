@@ -1,0 +1,51 @@
+sar_image_merge program running on 2024-05-17_10:59:54.
+Simulation params: angle is [-20 0 20] and terrain seed is 5000.
+This image is merged with straight method
+Entropy of image is 5.9765
+Standard deviation of image is 25.5137
+Spatial frequency of image is 7.9744
+Mutusal infos of image are [1.17316221459951;0.970382365031112;1.51536040209345]
+Median of mutual info 1.1732
+=========================
+This image is merged with wavelet_pca method
+Entropy of image is 5.1839
+Standard deviation of image is 12.1406
+Spatial frequency of image is 4.3649
+Mutusal infos of image are [0.821273188908837;0.938325147130181;1.07761696263585]
+Median of mutual info 0.9383
+=========================
+This image is merged with wavelet method
+Entropy of image is 5.2380
+Standard deviation of image is 17.7388
+Spatial frequency of image is 5.6203
+Mutusal infos of image are [5.23800739298809;0.487963244314946;0.426074473684338]
+Median of mutual info 0.4880
+=========================
+This image is merged with wavelet_softmax method
+Entropy of image is 5.4442
+Standard deviation of image is 16.2654
+Spatial frequency of image is 5.8538
+Mutusal infos of image are [1.34835590069257;0.608578649902814;0.641073963490374]
+Median of mutual info 0.6411
+=========================
+This image is merged with nsct method
+Entropy of image is 5.9160
+Standard deviation of image is 23.3572
+Spatial frequency of image is 7.6160
+Mutusal infos of image are [0.911576103217866;0.819962911850933;1.17056294828317]
+Median of mutual info 0.9116
+=========================
+This image is merged with nsct_softmax method
+Entropy of image is 5.5636
+Standard deviation of image is 19.9311
+Spatial frequency of image is 7.3745
+Mutusal infos of image are [0.712755742920923;0.718484576022973;0.902734541435716]
+Median of mutual info 0.7185
+=========================
+This image is merged with nsct_pca method
+Entropy of image is 5.1864
+Standard deviation of image is 12.8073
+Spatial frequency of image is 4.1467
+Mutusal infos of image are [0.870850922157274;0.963611899501437;1.15391368706039]
+Median of mutual info 0.9636
+=========================

@@ -1,0 +1,73 @@
+sar_image_merge program running on 2024-05-14_20:58:08.
+Detected 1 images to be fusioned.
+Detected 5 images to be fusioned.
+Entropy of image is 7.027781e+00
+Standard deviation of image is 4.399647e+01
+Spatial frequency of image is 1.267665e+01
+Mutusal infos of image are 7.02778121787847
+Median of mutual info 7.027781e+00
+Entropy of image is 6.837279e+00
+Standard deviation of image is 3.162811e+01
+Spatial frequency of image is 1.127415e+01
+Mutusal infos of image are 2.32955800658913
+Median of mutual info 2.329558e+00
+Entropy of image is 7.027781e+00
+Standard deviation of image is 4.399647e+01
+Spatial frequency of image is 1.267665e+01
+Mutusal infos of image are 7.02778121787847
+Median of mutual info 7.027781e+00
+Entropy of image is 7.027781e+00
+Standard deviation of image is 4.399647e+01
+Spatial frequency of image is 1.267665e+01
+Mutusal infos of image are 7.02778121787847
+Median of mutual info 7.027781e+00
+Entropy of image is 7.027781e+00
+Standard deviation of image is 4.399647e+01
+Spatial frequency of image is 1.267665e+01
+Mutusal infos of image are 7.02778121787847
+Median of mutual info 7.027781e+00
+Entropy of image is 7.027781e+00
+Standard deviation of image is 4.399647e+01
+Spatial frequency of image is 1.267665e+01
+Mutusal infos of image are 7.02778121787847
+Median of mutual info 7.027781e+00
+Entropy of image is 7.027781e+00
+Standard deviation of image is 4.399647e+01
+Spatial frequency of image is 1.267665e+01
+Mutusal infos of image are 7.02778121787847
+Median of mutual info 7.027781e+00
+Entropy of image is 5.224485e+00
+Standard deviation of image is 1.750439e+01
+Spatial frequency of image is 5.644329e+00
+Mutusal infos of image are 5.22448529060601
+Median of mutual info 5.224485e+00
+Entropy of image is 5.210016e+00
+Standard deviation of image is 1.626558e+01
+Spatial frequency of image is 5.515547e+00
+Mutusal infos of image are 2.5214859864697
+Median of mutual info 2.521486e+00
+Entropy of image is 5.224485e+00
+Standard deviation of image is 1.750439e+01
+Spatial frequency of image is 5.644329e+00
+Mutusal infos of image are 5.22448529060601
+Median of mutual info 5.224485e+00
+Entropy of image is 5.224485e+00
+Standard deviation of image is 1.750439e+01
+Spatial frequency of image is 5.644329e+00
+Mutusal infos of image are 5.22448529060601
+Median of mutual info 5.224485e+00
+Entropy of image is 5.224485e+00
+Standard deviation of image is 1.750439e+01
+Spatial frequency of image is 5.644329e+00
+Mutusal infos of image are 5.22448529060601
+Median of mutual info 5.224485e+00
+Entropy of image is 5.224485e+00
+Standard deviation of image is 1.750439e+01
+Spatial frequency of image is 5.644329e+00
+Mutusal infos of image are 5.22448529060601
+Median of mutual info 5.224485e+00
+Entropy of image is 5.224485e+00
+Standard deviation of image is 1.750439e+01
+Spatial frequency of image is 5.644329e+00
+Mutusal infos of image are 5.22448529060601
+Median of mutual info 5.224485e+00

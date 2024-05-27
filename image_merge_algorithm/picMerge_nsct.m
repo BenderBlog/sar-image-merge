@@ -1,5 +1,5 @@
 function [resultPic] = picMerge_nsct(pictures)
-
+disp("Fusioning with nsct...");
 pictures_count = size(pictures,1);
 dealt = cell(size(pictures));
 

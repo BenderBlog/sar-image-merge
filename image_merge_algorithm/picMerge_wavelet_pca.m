@@ -2,6 +2,7 @@ function [resultPic] = picMerge_wavelet_pca(pictures)
 % 本代码参考
 % 名称：Pixel level fusion for multiple SAR images using PCA and wavelet transform
 % IEEE 链接：https://ieeexplore.ieee.org/document/4148315
+disp("Fusioning with wavelet_pca...");
 
 pictures_count = size(pictures,1);
 

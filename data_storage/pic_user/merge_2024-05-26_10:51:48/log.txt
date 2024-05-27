@@ -1,0 +1,52 @@
+sar_image_merge program running on 2024-05-26_10:51:48.
+Detected 1 images to be fusioned.
+Detected 5 images to be fusioned.
+This image is merged with straight method
+Entropy of image is 7.0278
+Standard deviation of image is 43.9965
+Spatial frequency of image is 12.6767
+Mutusal infos of image are 7.02778121787847
+Median of mutual info 7.0278
+=========================
+This image is merged with wavelet_pca method
+Entropy of image is 6.8373
+Standard deviation of image is 31.6281
+Spatial frequency of image is 11.2741
+Mutusal infos of image are 2.32955800658913
+Median of mutual info 2.3296
+=========================
+This image is merged with wavelet method
+Entropy of image is 7.0278
+Standard deviation of image is 43.9965
+Spatial frequency of image is 12.6767
+Mutusal infos of image are 7.02778121787847
+Median of mutual info 7.0278
+=========================
+This image is merged with wavelet_softmax method
+Entropy of image is 7.0278
+Standard deviation of image is 43.9965
+Spatial frequency of image is 12.6767
+Mutusal infos of image are 7.02778121787847
+Median of mutual info 7.0278
+=========================
+This image is merged with nsct method
+Entropy of image is 7.0278
+Standard deviation of image is 43.9965
+Spatial frequency of image is 12.6767
+Mutusal infos of image are 7.02778121787847
+Median of mutual info 7.0278
+=========================
+This image is merged with nsct_softmax method
+Entropy of image is 7.0278
+Standard deviation of image is 43.9965
+Spatial frequency of image is 12.6767
+Mutusal infos of image are 7.02778121787847
+Median of mutual info 7.0278
+=========================
+This image is merged with nsct_pca method
+Entropy of image is 7.0278
+Standard deviation of image is 43.9965
+Spatial frequency of image is 12.6767
+Mutusal infos of image are 7.02778121787847
+Median of mutual info 7.0278
+=========================

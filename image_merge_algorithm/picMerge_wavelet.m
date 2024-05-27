@@ -1,4 +1,5 @@
 function [resultPic] = picMerge_wavelet(pictures)
+disp("Fusioning with wavelet...");
 
 pictures_count = size(pictures,1);
 

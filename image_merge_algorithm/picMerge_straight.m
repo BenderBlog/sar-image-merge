@@ -1,4 +1,5 @@
 function [resultPic] = picMerge_straight(pictures)
+disp("Fusioning with straight...")
 
 pictures_count = size(pictures,1);
 dealt = cell(pictures_count,4);

@@ -1,5 +1,6 @@
 function [resultPic] = picMerge_wavelet_softmax(pictures)
 
+disp("Fusioning with wavelet_softmax...");
 pictures_count = size(pictures,1);
 
 % 分解层次

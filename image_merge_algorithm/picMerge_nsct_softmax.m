@@ -1,5 +1,5 @@
 function [resultPic] = picMerge_nsct_softmax(pictures)
-
+disp("Fusioning with nsct_softmax...");
 pictures_count = size(pictures,1);
 dealt = cell(size(pictures));
 
@@ -36,7 +36,7 @@ for i = 1:clevels
         % 对于低频，softmax 方法
         newclear_norm_array = zeros(pictures_count,1);
         for k = 1:pictures_count
-             newclear_norm_array(k) = newclear_norm(dealt{k}{i});
+            newclear_norm_array(k) = newclear_norm(dealt{k}{i});
         end
         sumup = sum(newclear_norm_array);
         target_data = zeros(size(dealt{k}{i}));
@@ -44,7 +44,7 @@ for i = 1:clevels
             target_data = target_data + dealt{k}{i} * newclear_norm_array(k);
         end
         result{i} = target_data / sumup;
-    % 用于高频，使用绝对值最大   
+        % 用于高频，使用绝对值最大
     elseif i == 2
         size_array = size(result{i});
         for j = 1:size_array(1)

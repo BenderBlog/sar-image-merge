@@ -2,6 +2,7 @@ function [resultPic] = picMerge_nsct_pca(pictures)
 % 本代码参考
 % 名称：Pixel level fusion for multiple SAR images using PCA and wavelet transform
 % IEEE 链接：https://ieeexplore.ieee.org/document/4148315
+disp("Fusioning with nsct_pda...");
 
 pictures_count = size(pictures,1);
 dealt = cell(size(pictures));
@@ -42,7 +43,7 @@ for i = 1:clevels
         % 对低频进行 PCA 变换
         for pic = 1:pictures_count
             pca_level = min(size_array) * 0.75;
-            dealt{pic}{i} = pca_deal(dealt{pic}{i},uint32(pca_level)); 
+            dealt{pic}{i} = pca_deal(dealt{pic}{i},uint32(pca_level));
             value_array(pic) = mean(dealt{pic}{i}(:));
         end
         value_array = value_array / sum(value_array);
@@ -53,7 +54,7 @@ for i = 1:clevels
         for j = 1:size_array(1)
             for k = 1:size_array(2)
                 for pic = 1:pictures_count
-                     result{i}(j,k) = result{i}(j,k) + dealt{pic}{i}(j,k) * value_array(pic);
+                    result{i}(j,k) = result{i}(j,k) + dealt{pic}{i}(j,k) * value_array(pic);
                 end
             end
         end
@@ -65,7 +66,7 @@ for i = 1:clevels
             for k = 1:size_array(1)
                 for l = 1:size_array(2)
                     for pic = 1:pictures_count
-                         result{i}{j}(k,l) = result{i}{j}(k,l) + dealt{pic}{i}{j}(k,l) * value_array(pic);
+                        result{i}{j}(k,l) = result{i}{j}(k,l) + dealt{pic}{i}{j}(k,l) * value_array(pic);
                     end
                 end
             end
